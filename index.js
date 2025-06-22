@@ -5,33 +5,32 @@ const app = express();
 app.use(express.json());
 
 // Handle Railway deployment
-const PORT = process.env.PORT || 0; // Use 0 to let Node.js find an available port
+const PORT = process.env.PORT || 3000;
 
 // Add error handling for port conflicts
 const server = app.listen(PORT, () => {
-  console.log(`Server running on port ${server.address().port}`);
+  console.log(`Server running on port ${PORT}`);
 });
 
-server.on('error', (error) => {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+// Handle process termination gracefully
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
 
-  const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', reason);
+  process.exit(1);
 });
 
 app.post("/transcript", async (req, res) => {
