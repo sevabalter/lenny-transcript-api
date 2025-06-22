@@ -51,7 +51,7 @@ app.post("/transcript", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
       timeout: 30000,
       defaultViewport: { width: 1280, height: 720 },
