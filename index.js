@@ -4,8 +4,35 @@ import puppeteer from "puppeteer";
 const app = express();
 app.use(express.json());
 
-// Handle Windsurf deployment
-const PORT = process.env.PORT || 3000;
+// Handle Railway deployment
+const PORT = process.env.PORT || 0; // Use 0 to let Node.js find an available port
+
+// Add error handling for port conflicts
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${server.address().port}`);
+});
+
+server.on('error', (error) => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  const bind = typeof PORT === 'string' ? 'Pipe ' + PORT : 'Port ' + PORT;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+});
 
 app.post("/transcript", async (req, res) => {
   const { url } = req.body;
