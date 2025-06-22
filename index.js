@@ -70,7 +70,8 @@ app.post("/transcript", async (req, res) => {
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
     console.log('Navigating to:', url);
     await page.goto(url, { waitUntil: ["networkidle0", "domcontentloaded"], timeout: 30000 });
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await page.waitForTimeout(2000);
+
 
     // Try clicking the Transcript button
     try {
@@ -88,7 +89,7 @@ app.post("/transcript", async (req, res) => {
         return false;
       });
       if (clicked) console.log('Clicked transcript button.');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await page.waitForTimeout(2000);
     } catch (err) {
       console.log("Transcript click failed:", err.message);
     }
