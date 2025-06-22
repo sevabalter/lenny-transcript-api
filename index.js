@@ -5,11 +5,8 @@ const app = express();
 app.use(express.json());
 
 // Handle Railway deployment
-const PORT = process.env.PORT || 3000;
-
-// Add error handling for port conflicts
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+const server = app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
+  console.log(`Server running on port ${process.env.PORT || 3000}`);
 });
 
 // Handle process termination gracefully
