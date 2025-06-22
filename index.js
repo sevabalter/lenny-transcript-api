@@ -8,7 +8,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 // Add error handling for port conflicts
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
 
@@ -32,6 +32,27 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection:', reason);
   process.exit(1);
 });
+
+// Handle Railway restarts gracefully
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
+});
+
+// Handle Railway deployment
+if (process.env.RAILWAY === '1') {
+  console.log('Running in Railway environment');
+  // Set timeout for long-running operations
+  app.use((req, res, next) => {
+    req.setTimeout(90000, () => {
+      res.status(504).json({ error: 'Request timed out' });
+    });
+    next();
+  });
+}
 
 app.post("/transcript", async (req, res) => {
   const { url } = req.body;

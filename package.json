@@ -17,5 +17,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "API for extracting podcast transcripts from Lenny's Newsletter"
+  "description": "API for extracting podcast transcripts from Lenny's Newsletter",
+  "railway": {
+    "env": {
+      "PORT": "8080"
+    }
+  }
 }
