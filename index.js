@@ -4,6 +4,19 @@ import puppeteer from "puppeteer";
 const app = express();
 app.use(express.json());
 
+// Handle Vercel's deployment
+const isVercel = process.env.VERCEL === '1';
+if (isVercel) {
+  console.log('Running in Vercel environment');
+  // Vercel has a 10 second timeout for responses
+  app.use((req, res, next) => {
+    req.setTimeout(9000, () => {
+      res.status(504).json({ error: 'Request timed out' });
+    });
+    next();
+  });
+}
+
 app.post("/transcript", async (req, res) => {
   const { url } = req.body;
   if (!url) return res.status(400).json({ error: "Missing URL" });
